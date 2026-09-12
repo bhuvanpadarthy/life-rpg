@@ -1,0 +1,90 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-[#090a0f] text-gray-100 font-sans selection:bg-cyber-cyan selection:text-black antialiased overflow-x-hidden min-h-screen;
+    background-image: 
+      radial-gradient(circle at 15% 15%, rgba(0, 243, 255, 0.05) 0%, transparent 40%),
+      radial-gradient(circle at 85% 85%, rgba(255, 0, 127, 0.05) 0%, transparent 40%),
+      radial-gradient(circle at 50% 50%, rgba(112, 0, 255, 0.03) 0%, transparent 60%);
+  }
+
+  h1, h2, h3, .font-orbitron {
+    font-family: 'Orbitron', sans-serif;
+    letter-spacing: 0.05em;
+  }
+
+  .font-rajdhani {
+    font-family: 'Rajdhani', sans-serif;
+  }
+}
+
+/* Custom Cyberpunk Utilities */
+.cyber-card {
+  @apply bg-[#10121b]/80 backdrop-blur-md border border-[#24293e] rounded-xl transition-all duration-300 hover:border-cyber-cyan/40;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+}
+
+.cyber-card-glow {
+  @apply bg-[#10121b]/90 backdrop-blur-md border border-cyber-cyan/50 rounded-xl transition-all duration-300;
+  box-shadow: 0 0 20px rgba(0, 243, 255, 0.15), inset 0 0 15px rgba(0, 243, 255, 0.05);
+}
+
+.cyber-card-pink {
+  @apply bg-[#10121b]/90 backdrop-blur-md border border-cyber-pink/50 rounded-xl transition-all duration-300;
+  box-shadow: 0 0 20px rgba(255, 0, 127, 0.15), inset 0 0 15px rgba(255, 0, 127, 0.05);
+}
+
+.cyber-card-gold {
+  @apply bg-[#10121b]/90 backdrop-blur-md border border-cyber-yellow/50 rounded-xl transition-all duration-300;
+  box-shadow: 0 0 20px rgba(255, 170, 0, 0.15), inset 0 0 15px rgba(255, 170, 0, 0.05);
+}
+
+.cyber-button {
+  @apply relative inline-flex items-center justify-center font-orbitron font-bold uppercase tracking-wider transition-all duration-200 active:scale-95 disabled:opacity-50 disabled:pointer-events-none;
+}
+
+.cyber-button-primary {
+  @apply cyber-button bg-gradient-to-r from-cyber-cyan to-blue-600 text-black px-6 py-2.5 rounded-lg hover:shadow-[0_0_20px_rgba(0,243,255,0.6)] hover:brightness-110;
+}
+
+.cyber-button-secondary {
+  @apply cyber-button bg-[#161926] border border-cyber-cyan/40 text-cyber-cyan px-5 py-2 rounded-lg hover:bg-cyber-cyan/10 hover:border-cyber-cyan hover:shadow-[0_0_15px_rgba(0,243,255,0.3)];
+}
+
+.cyber-button-pink {
+  @apply cyber-button bg-gradient-to-r from-cyber-pink to-purple-600 text-white px-6 py-2.5 rounded-lg hover:shadow-[0_0_20px_rgba(255,0,127,0.6)] hover:brightness-110;
+}
+
+.cyber-input {
+  @apply bg-[#161926] border border-[#24293e] text-white rounded-lg px-4 py-2.5 focus:outline-none focus:border-cyber-cyan focus:ring-1 focus:ring-cyber-cyan transition-all placeholder:text-gray-500;
+}
+
+/* Custom Cyber Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #090a0f;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #24293e;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #00f3ff;
+}
+
+/* Animated Grid Background */
+.bg-cyber-grid {
+  background-size: 40px 40px;
+  background-image: 
+    linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+}
