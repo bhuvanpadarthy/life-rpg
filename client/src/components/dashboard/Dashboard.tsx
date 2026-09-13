@@ -66,27 +66,50 @@ export const Dashboard: React.FC = () => {
   return (
     <div className="space-y-8 pb-12">
       
-      {/* Hero Welcome Banner */}
-      <div className="relative cyber-card p-6 sm:p-8 overflow-hidden">
-        <div className="absolute top-0 right-0 w-96 h-96 bg-cyber-cyan/10 rounded-full blur-3xl -z-10" />
-        <div className="absolute bottom-0 left-0 w-96 h-96 bg-cyber-purple/10 rounded-full blur-3xl -z-10" />
+      {/* Hero Welcome Banner with 3D Cyber City Artwork & 3D Hero Avatar */}
+      <div className="relative cyber-card p-6 sm:p-8 overflow-hidden border border-cyber-cyan/30 shadow-glow-cyan">
+        
+        {/* Background 3D City Metropolis Banner Overlay */}
+        <div className="absolute inset-0 z-0 opacity-20 hover:opacity-30 transition-opacity duration-700">
+          <img 
+            src="/assets/cyber_banner_3d.jpg" 
+            alt="3D Cyberpunk City Banner" 
+            className="w-full h-full object-cover filter saturate-150"
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-[#090a0f] via-[#090a0f]/80 to-transparent" />
+        </div>
 
-        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
-          <div className="space-y-2 max-w-2xl">
-            <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-cyber-cyan/10 border border-cyber-cyan/30 text-cyber-cyan text-xs font-orbitron">
-              <Sparkles className="w-3.5 h-3.5" />
-              <span>ACTIVE CYBER SESSION</span>
+        <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+          
+          <div className="flex items-center space-x-5">
+            {/* 3D Cyberpunk Hero Avatar Card */}
+            <div className="relative w-20 h-20 sm:w-24 sm:h-24 rounded-2xl overflow-hidden border-2 border-cyber-cyan shadow-glow-cyan shrink-0 hover:scale-105 transition-transform">
+              <img 
+                src="/assets/cyber_hero_3d.jpg" 
+                alt="3D Cyberpunk Warrior Avatar" 
+                className="w-full h-full object-cover"
+              />
+              <div className="absolute bottom-0 inset-x-0 bg-black/70 text-[9px] font-orbitron text-center text-cyber-cyan font-bold py-0.5">
+                LEVEL {user.level}
+              </div>
             </div>
-            <h1 className="text-2xl sm:text-4xl font-orbitron font-extrabold text-white">
-              WELCOME BACK, <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyber-cyan to-cyber-pink">{user.username.toUpperCase()}</span>
-            </h1>
-            <p className="text-gray-400 text-sm font-sans">
-              Current Rank: <span className="text-white font-semibold">{user.title}</span>. Complete your daily quests to gain XP, unlock attributes, and ascend levels.
-            </p>
+
+            <div className="space-y-1.5 max-w-xl">
+              <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-cyber-cyan/15 border border-cyber-cyan/40 text-cyber-cyan text-xs font-orbitron shadow-glow-cyan">
+                <Sparkles className="w-3.5 h-3.5 animate-spin" />
+                <span>3D CYBERNETIC HERO MATRIX ACTIVE</span>
+              </div>
+              <h1 className="text-2xl sm:text-4xl font-orbitron font-extrabold text-white tracking-wide">
+                WELCOME BACK, <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyber-cyan via-cyber-purple to-cyber-pink">{user.username.toUpperCase()}</span>
+              </h1>
+              <p className="text-gray-300 text-sm font-sans">
+                Current Rank: <span className="text-cyber-cyan font-semibold">{user.title}</span>. Conquer your daily matrix quests to earn XP, gold tokens, and 3D achievements.
+              </p>
+            </div>
           </div>
 
           {/* Level Progress Widget */}
-          <div className="w-full md:w-72 bg-[#161926] p-4 rounded-xl border border-[#24293e] space-y-3">
+          <div className="w-full md:w-72 bg-[#161926]/90 backdrop-blur-md p-4 rounded-xl border border-[#24293e] space-y-3 shrink-0 shadow-xl">
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-2">
                 <div className="w-8 h-8 rounded-lg bg-cyber-purple/30 border border-cyber-purple flex items-center justify-center font-orbitron font-bold text-cyber-purple">

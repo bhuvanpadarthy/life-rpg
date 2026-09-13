@@ -338,13 +338,19 @@ export const CyberBossRaid: React.FC = () => {
         {/* Boss Display Box */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-center bg-[#0d0f17]/90 p-5 rounded-2xl border border-[#24293e]">
           
-          {/* Boss Sprite Avatar */}
+          {/* 3D Boss Avatar Artwork */}
           <div className="flex flex-col items-center justify-center space-y-2 text-center md:border-r border-[#24293e] md:pr-6">
-            <div className={`text-6xl p-4 rounded-2xl bg-gradient-to-tr ${currentBoss.color} bg-opacity-20 border border-white/20 transition-transform duration-150 ${isAttacking ? 'scale-125 rotate-6 shadow-glow-pink' : 'animate-bounce'}`}>
-              {currentBoss.avatar}
+            <div className={`relative w-36 h-36 rounded-2xl overflow-hidden border-2 border-cyber-pink/60 shadow-glow-pink transition-all duration-200 ${isAttacking ? 'scale-110 rotate-3 shadow-glow-pink filter brightness-125' : 'hover:scale-105'}`}>
+              <img 
+                src="/assets/cyber_boss_3d.jpg" 
+                alt="Cyber Mecha Raid Boss 3D" 
+                className="w-full h-full object-cover animate-pulse"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
+              <div className="absolute top-2 right-2 text-xl">{currentBoss.avatar}</div>
             </div>
-            <span className="text-xs font-orbitron text-cyber-pink font-bold uppercase tracking-wider">
-              {bossHp === 0 ? '💥 DEFEATED!' : 'TARGET ACQUIRED'}
+            <span className="text-xs font-orbitron text-cyber-pink font-bold uppercase tracking-wider animate-pulse">
+              {bossHp === 0 ? '💥 BOSS DEFEATED!' : '3D MECHA TARGET ACQUIRED'}
             </span>
           </div>
 
