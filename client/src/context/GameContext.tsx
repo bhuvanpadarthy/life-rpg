@@ -147,54 +147,59 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const completeQuest = async (id: string) => {
-    const res = await api.post(`/quests/${id}/complete`);
-    const data = res.data;
+    try {
+      const res = await api.post(`/quests/${id}/complete`);
+      const data = res.data;
 
-    // Update quest list
-    setQuests(prev => prev.map(q => q.id === id ? { ...q, status: 'COMPLETED' as const, completed_at: new Date().toISOString() } : q));
+      // Update quest status in state
+      setQuests(prev => prev.map(q => q.id === id ? { ...q, status: 'COMPLETED' as const, completed_at: new Date().toISOString() } : q));
 
-    // Update user auth context
-    if (data.user) {
-      updateUser({
-        level: data.user.level,
-        xp: data.user.xp,
-        xpRequiredNext: data.user.xpRequiredNext,
-        gold: data.user.gold,
-        currentStreak: data.user.currentStreak,
-        bestStreak: data.user.bestStreak,
-        title: data.user.title,
-        attributes: data.attributes
-      });
-    }
+      // Synchronize user auth state (level, xp, gold, streaks, attributes)
+      if (data.user) {
+        updateUser({
+          level: data.user.level,
+          xp: data.user.xp,
+          xpRequiredNext: data.user.xpRequiredNext,
+          gold: data.user.gold,
+          currentStreak: data.user.currentStreak,
+          bestStreak: data.user.bestStreak,
+          title: data.user.title,
+          attributes: data.attributes
+        });
+      }
 
-    // Trigger XP Notification
-    addNotification(
-      'QUEST COMPLETED! ⚔️',
-      `+${data.rewards.xpEarned} XP | +🪙 ${data.rewards.goldEarned} Gold | +${data.rewards.attributeGain} ${data.rewards.attributeType}`,
-      'xp'
-    );
+      // Trigger XP & Gold Notification
+      addNotification(
+        'QUEST COMPLETED! ⚔️',
+        `+${data.rewards.xpEarned} XP | +🪙 ${data.rewards.goldEarned} Gold | +${data.rewards.attributeGain} ${data.rewards.attributeType}`,
+        'xp'
+      );
 
-    // Trigger Level Up Celebration if leveled up
-    if (data.progression && data.progression.leveledUp) {
-      // Trigger canvas confetti
-      confetti({
-        particleCount: 120,
-        spread: 80,
-        origin: { y: 0.6 }
-      });
+      // Trigger Level Up Celebration if leveled up
+      if (data.progression && data.progression.leveledUp) {
+        confetti({
+          particleCount: 120,
+          spread: 80,
+          origin: { y: 0.6 }
+        });
 
-      setLevelUpState({
-        isOpen: true,
-        previousLevel: data.progression.previousLevel,
-        newLevel: data.progression.newLevel,
-        levelsGained: data.progression.levelsGained
-      });
-    }
+        setLevelUpState({
+          isOpen: true,
+          previousLevel: data.progression.previousLevel,
+          newLevel: data.progression.newLevel,
+          levelsGained: data.progression.levelsGained
+        });
+      }
 
-    // Trigger Unlocked Achievements notification
-    if (data.unlockedAchievementIds && data.unlockedAchievementIds.length > 0) {
-      addNotification('ACHIEVEMENT UNLOCKED! 🏆', 'Check your achievements tab!', 'achievement');
-      fetchAchievements();
+      // Trigger Unlocked Achievements notification
+      if (data.unlockedAchievementIds && data.unlockedAchievementIds.length > 0) {
+        addNotification('ACHIEVEMENT UNLOCKED! 🏆', 'Check your achievements tab!', 'achievement');
+        fetchAchievements();
+      }
+    } catch (err: any) {
+      console.error('[GameContext] completeQuest error:', err);
+      const msg = err.response?.data?.error || err.message || 'Failed to complete quest';
+      addNotification('QUEST ERROR ⚠️', typeof msg === 'string' ? msg : 'Could not complete quest', 'error');
     }
   };
 

@@ -210,7 +210,9 @@ export const completeQuest = async (req: AuthRequest, res: Response) => {
       user.best_streak
     );
 
-    const newGold = user.gold + rewards.gold;
+    const currentGold = Number(user.gold) || 0;
+    const rewardsGold = Number(rewards.gold) || 0;
+    const newGold = currentGold + rewardsGold;
 
     // 6. Update User in DB
     await db.query(
@@ -230,7 +232,7 @@ export const completeQuest = async (req: AuthRequest, res: Response) => {
       ]
     );
 
-    // 7. Increment Associated Character Attribute
+    // 7. Increment Associated Character Attribute (Portable SELECT/UPDATE/INSERT)
     const attrType = quest.attribute_type || rewards.attributeType;
     const attrRes = await db.query(
       'SELECT value FROM user_attributes WHERE user_id = $1 AND attribute_name = $2',
@@ -239,17 +241,19 @@ export const completeQuest = async (req: AuthRequest, res: Response) => {
 
     let currentAttrVal = 10;
     if (attrRes.rows.length > 0) {
-      currentAttrVal = attrRes.rows[0].value;
+      currentAttrVal = Number(attrRes.rows[0].value) || 10;
+      const newAttrVal = currentAttrVal + rewards.attributeGain;
+      await db.query(
+        'UPDATE user_attributes SET value = $1 WHERE user_id = $2 AND attribute_name = $3',
+        [newAttrVal, userId, attrType]
+      );
+    } else {
+      const newAttrVal = currentAttrVal + rewards.attributeGain;
+      await db.query(
+        'INSERT INTO user_attributes (id, user_id, attribute_name, value) VALUES ($1, $2, $3, $4)',
+        [`attr-${userId}-${attrType}`, userId, attrType, newAttrVal]
+      );
     }
-
-    const newAttrVal = currentAttrVal + rewards.attributeGain;
-
-    await db.query(
-      `INSERT INTO user_attributes (id, user_id, attribute_name, value)
-       VALUES ($1, $2, $3, $4)
-       ON CONFLICT (user_id, attribute_name) DO UPDATE SET value = $4`,
-      [`attr-${userId}-${attrType}`, userId, attrType, newAttrVal]
-    );
 
     // Log completion event
     const compLogId = `log-${Date.now()}-${Math.random().toString(36).substring(2, 5)}`;
