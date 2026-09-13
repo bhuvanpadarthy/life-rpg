@@ -20,6 +20,7 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useGame } from '../../context/GameContext';
+import { CyberBossRaid } from './CyberBossRaid';
 
 export const Dashboard: React.FC = () => {
   const { user } = useAuth();
@@ -108,6 +109,9 @@ export const Dashboard: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* Cybernetic Boss Raid & Neural Matrix Oracle (Judge WOW Feature) */}
+      <CyberBossRaid />
 
       {/* Quick Stats Grid */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
