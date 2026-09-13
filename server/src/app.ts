@@ -26,9 +26,9 @@ app.use(async (req, res, next) => {
   try {
     await db.init();
     next();
-  } catch (err) {
+  } catch (err: any) {
     console.error('[DB INIT ERROR]', err);
-    res.status(500).json({ error: 'Database connection failed' });
+    res.status(500).json({ error: (err && err.message) || 'Database connection failed' });
   }
 });
 

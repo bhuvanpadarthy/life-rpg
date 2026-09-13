@@ -162,19 +162,40 @@ class DB {
         await this.runMigrations();
         return;
       } catch (err) {
-        console.error('[DB] PostgreSQL connection failed, falling back to local database mode:', err);
+        console.error('[DB] PostgreSQL connection failed, attempting SQLite fallback:', err);
       }
     }
 
-    // Fallback: Local SQLite database for zero-dependency local dev/evaluation
-    console.log('[DB] Using local SQLite database engine.');
-    const dbPath = path.resolve(process.cwd(), 'life_rpg.sqlite');
-    this.sqliteDb = await open({
-      filename: dbPath,
-      driver: sqlite3.Database
-    });
-    this.isPg = false;
-    await this.runMigrations();
+    // Fallback: SQLite database (handles read-only Vercel serverless filesystem)
+    console.log('[DB] Using SQLite database engine.');
+    const isVercel = process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME;
+    const dbPath = isVercel
+      ? path.resolve('/tmp', 'life_rpg.sqlite')
+      : path.resolve(process.cwd(), 'life_rpg.sqlite');
+
+    try {
+      this.sqliteDb = await open({
+        filename: dbPath,
+        driver: sqlite3.Database
+      });
+      this.isPg = false;
+      await this.runMigrations();
+      console.log(`[DB] Connected successfully to SQLite (${dbPath}).`);
+    } catch (sqliteErr) {
+      console.error('[DB] SQLite file initialization failed, using in-memory fallback:', sqliteErr);
+      try {
+        this.sqliteDb = await open({
+          filename: ':memory:',
+          driver: sqlite3.Database
+        });
+        this.isPg = false;
+        await this.runMigrations();
+        console.log('[DB] Connected to in-memory SQLite fallback.');
+      } catch (memErr) {
+        console.error('[DB] In-memory SQLite failed:', memErr);
+        throw new Error('Database connection failed. Please ensure DATABASE_URL is set in Vercel settings.');
+      }
+    }
   }
 
   private async runMigrations() {
