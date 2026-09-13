@@ -94,19 +94,20 @@ export const register = async (req: AuthRequest, res: Response) => {
 
 export const login = async (req: AuthRequest, res: Response) => {
   try {
-    const { usernameOrEmail, password } = req.body;
+    const usernameOrEmail = req.body.usernameOrEmail || req.body.username || req.body.email;
+    const password = req.body.password;
 
     if (!usernameOrEmail || !password) {
       res.status(400).json({ error: 'Username/Email and password are required.' });
       return;
     }
 
-    const searchTerm = usernameOrEmail.trim().toLowerCase();
+    const searchTerm = String(usernameOrEmail).trim().toLowerCase();
 
-    // Query user
+    // Query user by username or email
     const userRes = await db.query(
-      'SELECT * FROM users WHERE LOWER(username) = $1 OR LOWER(email) = $1',
-      [searchTerm]
+      'SELECT * FROM users WHERE LOWER(username) = $1 OR LOWER(email) = $2',
+      [searchTerm, searchTerm]
     );
 
     if (userRes.rows.length === 0) {

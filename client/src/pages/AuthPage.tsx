@@ -19,6 +19,16 @@ export const AuthPage: React.FC = () => {
     return null;
   }
 
+  const extractErrorMessage = (err: any): string => {
+    if (!err) return 'Authentication failed.';
+    const rawError = err.response?.data?.error || err.response?.data?.message || err.message;
+    if (typeof rawError === 'string') return rawError;
+    if (typeof rawError === 'object' && rawError !== null) {
+      return rawError.message || rawError.code || JSON.stringify(rawError);
+    }
+    return String(rawError || 'Authentication failed.');
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
@@ -37,7 +47,7 @@ export const AuthPage: React.FC = () => {
       }
       navigate('/');
     } catch (err: any) {
-      setError(err.response?.data?.error || err.message || 'Authentication failed.');
+      setError(extractErrorMessage(err));
     } finally {
       setIsLoading(false);
     }

@@ -5,3 +5,4 @@ server/dist/
 life_rpg.sqlite
 *.log
 .DS_Store
+life-rpg/

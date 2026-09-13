@@ -8,10 +8,15 @@ import { authenticateToken } from '../middleware/authMiddleware.js';
 
 const router = Router();
 
-// Auth Routes (Public & Protected)
+// Auth Routes (Public & Protected) - Supports both /auth/* and direct routes
 router.post('/auth/register', register);
+router.post('/register', register);
+
 router.post('/auth/login', login);
+router.post('/login', login);
+
 router.get('/auth/me', authenticateToken, getMe);
+router.get('/me', authenticateToken, getMe);
 
 // Quest Routes (Protected)
 router.get('/quests', authenticateToken, getQuests);
