@@ -4,6 +4,7 @@ import jwt from 'jsonwebtoken';
 import { db } from '../database/db.js';
 import { AuthRequest } from '../middleware/authMiddleware.js';
 import { ProgressionService } from '../services/progressionService.js';
+import { getJwtSecret } from '../config.js';
 
 export const register = async (req: AuthRequest, res: Response) => {
   try {
@@ -62,10 +63,9 @@ export const register = async (req: AuthRequest, res: Response) => {
     }
 
     // Create JWT Token
-    const jwtSecret = process.env.JWT_SECRET || 'cyberpunk_life_rpg_super_secret_jwt_key_2026';
     const token = jwt.sign(
       { id: userId, username: username.trim(), email: email.trim().toLowerCase() },
-      jwtSecret,
+      getJwtSecret(),
       { expiresIn: '7d' }
     );
 
@@ -125,10 +125,9 @@ export const login = async (req: AuthRequest, res: Response) => {
     }
 
     // Create JWT Token
-    const jwtSecret = process.env.JWT_SECRET || 'cyberpunk_life_rpg_super_secret_jwt_key_2026';
     const token = jwt.sign(
       { id: user.id, username: user.username, email: user.email },
-      jwtSecret,
+      getJwtSecret(),
       { expiresIn: '7d' }
     );
 

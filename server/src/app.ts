@@ -10,7 +10,7 @@ const app = express();
 
 // Configure CORS for single Vercel domain and local development
 const allowedOrigins = process.env.CLIENT_URL
-  ? [process.env.CLIENT_URL, 'http://localhost:3000', 'http://localhost:5000']
+  ? [process.env.CLIENT_URL, 'http://localhost:3000', 'http://localhost:5000', 'http://localhost:5173']
   : true;
 
 app.use(cors({
@@ -21,6 +21,28 @@ app.use(cors({
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Keep health checks independent from request-time database initialization so
+// deployment diagnostics can distinguish a live API from a ready API.
+app.get(['/api/health', '/health'], async (req, res) => {
+  try {
+    await db.init();
+    res.json({
+      status: 'ONLINE',
+      ready: true,
+      system: 'LIFE RPG API SERVER',
+      timestamp: new Date().toISOString(),
+      databaseMode: db.isPg ? 'POSTGRESQL' : 'SQLITE_DEVELOPMENT_ONLY'
+    });
+  } catch (err: any) {
+    res.status(503).json({
+      status: 'ONLINE',
+      ready: false,
+      system: 'LIFE RPG API SERVER',
+      error: err?.message || 'Database connection failed'
+    });
+  }
+});
+
 // Database connection middleware for Vercel serverless functions
 app.use(async (req, res, next) => {
   try {
@@ -30,16 +52,6 @@ app.use(async (req, res, next) => {
     console.error('[DB INIT ERROR]', err);
     res.status(500).json({ error: (err && err.message) || 'Database connection failed' });
   }
-});
-
-// Health check endpoints
-app.get(['/api/health', '/health'], (req, res) => {
-  res.json({
-    status: 'ONLINE',
-    system: 'LIFE RPG API SERVER',
-    timestamp: new Date().toISOString(),
-    databaseMode: db.isPg ? 'POSTGRESQL' : 'SQLITE_EMBEDDED'
-  });
 });
 
 // Mount API Routes under both /api and root level

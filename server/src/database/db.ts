@@ -4,6 +4,7 @@ import { open, Database } from 'sqlite';
 import path from 'path';
 import fs from 'fs';
 import dotenv from 'dotenv';
+import { appConfig } from '../config.js';
 
 dotenv.config();
 
@@ -146,7 +147,11 @@ class DB {
   }
 
   private async _doInit(): Promise<void> {
-    const connectionString = process.env.DATABASE_URL;
+    const connectionString = appConfig.databaseUrl;
+
+    if (appConfig.isProduction && !connectionString) {
+      throw new Error('DATABASE_URL is required in production. Configure a managed PostgreSQL database in Vercel.');
+    }
 
     if (connectionString && connectionString.trim() !== '') {
       try {
@@ -162,7 +167,10 @@ class DB {
         await this.runMigrations();
         return;
       } catch (err) {
-        console.error('[DB] PostgreSQL connection failed, attempting SQLite fallback:', err);
+        console.error('[DB] PostgreSQL connection failed:', err);
+        if (appConfig.isProduction) {
+          throw new Error('PostgreSQL connection failed in production. Check DATABASE_URL, SSL, and database availability.');
+        }
       }
     }
 
